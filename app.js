@@ -28,7 +28,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Exposes a bunch of methods for validating data. Used heavily on userController.validateRegister
-app.use(expressValidator());
+//app.use(expressValidator());
 
 // populates req.cookies with any cookies that came along with the request
 app.use(cookieParser());
@@ -60,10 +60,10 @@ app.use((req, res, next) => {
 });
 
 // promisify some callback based APIs
-app.use((req, res, next) => {
+/*app.use((req, res, next) => {
   req.login = promisify(req.login, req);
   next();
-});
+});*/
 
 // After allllll that above middleware, we finally handle our own routes!
 app.use('/', routes);
