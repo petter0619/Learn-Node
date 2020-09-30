@@ -72,7 +72,8 @@ exports.updateStore = async (req, res) => {
     // 1) Find and update the store
     const store = await Store.findOneAndUpdate({ _id: req.params.id }, req.body, {
         new: true, // Return the new stores instead of the old one
-        runValidators: true // Needed so database checks for 'required' fields determined in model
+        runValidators: true, // Needed so database checks for 'required' fields determined in model
+        useFindAndModify: false
     }).exec();
     // 2) Redirect them to store and tell them it worked
     req.flash('success', `Successfully updated <strong>${store.name}</strong>. <a href="/stores/${store.slug}">View store -></a>`);
