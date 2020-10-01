@@ -58,3 +58,16 @@ exports.reset = async (req, res) => {
     // If there is a user, show the reset password form
     res.render('reset', { title: 'Reset your Password' });
 }
+
+exports.confirmedPasswords = (req, res, next) => {
+    if(req.body.password === req.body['password-confirm']) {
+        next();
+        return;
+    }
+    req.flash('error', 'Passwords do not match!')
+    res.redirect('back');
+}
+
+exports.update = async (req, res) => {
+    
+}
