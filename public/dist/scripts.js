@@ -51,11 +51,11 @@ function typeAhead(search) {
             .get(`/api/search?q=${this.value}`)
             .then(res => {
                 if(res.data.length) {
-                    searchResults.innerHTML = searchResultsHTML(res.data);
+                    searchResults.innerHTML = DOMPurify.sanitize(searchResultsHTML(res.data));
                     return;
                 }
                 // Tell them no results found
-                searchResults.innerHTML = `<div class="search__result">No results for ${this.value} found!</div>`;
+                searchResults.innerHTML = DOMPurify.sanitize(`<div class="search__result">No results for ${this.value} found!</div>`);
             })
             .catch(err => {
                 console.error(err);
