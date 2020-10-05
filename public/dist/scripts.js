@@ -21,7 +21,6 @@ function autocomplete(input, latInput, lngInput) {
 autocomplete( input, latInput, lngInput );
 
 // Search Box
-//const axios = require('axios');
 const searchBar = document.querySelector('.search');
 
 function searchResultsHTML(stores) {
@@ -47,14 +46,16 @@ function typeAhead(search) {
         }
         // Show the search results
         searchResults.style.display = 'block';
-        searchResults.innerHTML = '';
         
         axios
             .get(`/api/search?q=${this.value}`)
             .then(res => {
                 if(res.data.length) {
                     searchResults.innerHTML = searchResultsHTML(res.data);
+                    return;
                 }
+                // Tell them no results found
+                searchResults.innerHTML = `<div class="search__result">No results for ${this.value} found!</div>`;
             })
             .catch(err => {
                 console.error(err);
