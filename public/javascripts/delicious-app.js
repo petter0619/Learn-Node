@@ -1,6 +1,8 @@
 import '../sass/style.scss';
 
-import { $, $$, autocomplete } from './modules/bling';
+import { $, $$ } from './modules/bling';
 //import autocomplete from './modules/autocomplete';
+//import typeAhead from './modules/typeAhead'
 
 //autocomplete( $('#address'), $('#lat'), $('#lng') );
+//typeAhead( $('.search') );
