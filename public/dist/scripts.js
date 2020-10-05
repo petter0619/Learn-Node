@@ -1,4 +1,4 @@
-// Add store Autocomplete lat && long
+// ------------------------- Add store Autocomplete lat && long -------------------------
 const input = document.getElementById('address');
 const latInput = document.getElementById('lat');
 const lngInput = document.getElementById('lng');
@@ -20,7 +20,7 @@ function autocomplete(input, latInput, lngInput) {
 
 autocomplete( input, latInput, lngInput );
 
-// Search Box
+// ------------------------- Search Box -------------------------
 const searchBar = document.querySelector('.search');
 
 function searchResultsHTML(stores) {
@@ -91,3 +91,73 @@ function typeAhead(search) {
 }
 
 typeAhead(searchBar);
+
+// ------------------------- Map page map -------------------------
+
+const mapPageMap = document.querySelector('#map');
+const mapOptions = {
+    center: {lat: 43.2, lng: -79.8},
+    zoom: 11
+}
+
+function loadPlaces(map, lat = 43.2, lng = -79.8) {
+    axios
+        .get(`/api/search/near?lat=${lat}&lng=${lng}`)
+        .then(res => {
+            const places = res.data;
+            if(!places.length) {
+                alert('No places found');
+                return;
+            }
+            // Create a bounds
+            const bounds = new google.maps.LatLngBounds();
+            const infoWindow = new google.maps.InfoWindow();
+
+            const markers = places.map(place => {
+                const [placeLng, placeLat] = place.location.coordinates;
+                const position = { lat: placeLat, lng: placeLng };
+                bounds.extend(position);
+                const marker = new google.maps.Marker({
+                    map: map,
+                    position: position
+                });
+                marker.place = place;
+                return marker;
+            });
+            // When someone clicks on a marker show the info of that place
+            markers.forEach(marker => marker.addListener('click', function() {
+                const html = `
+                    <div class="popup">
+                        <a href="/store/${this.place.slug}">
+                            <img src="/uploads/${this.place.photo || 'store.png'}" alt="${this.place.name}">
+                            <p>${this.place.name} - ${this.place.name.address}</p>
+                        </a>
+                    </div>
+                `;
+                console.log(this.place);
+                infoWindow.setContent(html);
+                infoWindow.open(map, this);
+            }));
+
+            // Zoom the map to fit all the markers
+            map.setCenter(bounds.getCenter());
+            map.fitBounds(bounds);
+        });
+}
+
+function makeMap(mapDiv) {
+    if(!mapDiv) return;
+    // Make our map
+    const map = new google.maps.Map(mapDiv, mapOptions);
+    loadPlaces(map);
+    const input = document.querySelector('[name="geolocate"]');
+    const autocomplete = new google.maps.places.Autocomplete(input);
+    
+    autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+    });
+}
+
+makeMap( mapPageMap );
+
+// Can change hte lat && lng defauls to the users actual location with navigator.geolocation.getCurrentPosition (see JS30 Day 21 for tutorial)
