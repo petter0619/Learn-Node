@@ -60,6 +60,33 @@ function typeAhead(search) {
                 console.error(err);
             });
     });
+    // Handle keyboard inputs
+    searchInput.addEventListener('keyup', (e) =>{
+        // If they aren't pressing up, down or enter, skip it!
+        if(![38, 40, 13].includes(e.keyCode)) return;
+        // Otherwise do something
+        const activeClass = 'search__result--active';
+        const current = search.querySelector(`.${activeClass}`);
+        const items = search.querySelectorAll('.search__result');
+        let next;
+        if(e.keyCode === 40 && current) {
+            next = current.nextElementSibling || items[0];
+        } else if(e.keyCode === 40) {
+            next = items[0];
+        } else if (e.keyCode === 38 && current) {
+            next = current.previousElementSibling || items[items.length - 1];
+        } else if (e.keyCode === 38) {
+            next = items[items.length - 1];
+        } else if(e.keyCode === 13 && current.href) {
+            window.location = current.href;
+            return;
+        }
+        if(current) {
+            current.classList.remove(activeClass);
+        }
+        next.classList.add(activeClass);
+        
+    });
 }
 
 typeAhead(searchBar);
