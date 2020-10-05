@@ -155,6 +155,7 @@ function makeMap(mapDiv) {
     
     autocomplete.addListener('place_changed', () => {
         const place = autocomplete.getPlace();
+        loadPlaces(map, place.geometry.location.lat(), place.geometry.location.lng());
     });
 }
 
