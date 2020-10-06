@@ -85,12 +85,12 @@ exports.updateStore = async (req, res) => {
         useFindAndModify: false
     }).exec();
     // 2) Redirect them to store and tell them it worked
-    req.flash('success', `Successfully updated <strong>${store.name}</strong>. <a href="/stores/${store.slug}">View store -></a>`);
+    req.flash('success', `Successfully updated <strong>${store.name}</strong>. <a href="/store/${store.slug}">View store -></a>`);
     res.redirect(`/stores/${store._id}/edit`);
 }
 
 exports.getStoreBySlug = async (req, res) => {
-    const store = await (await Store.findOne({ slug: req.params.slug })).populate('author');
+    const store = await Store.findOne({ slug: req.params.slug }).populate('author reviews');
     if(!store) return next();
     res.render('store', { store, title: store.name });
 }
@@ -160,4 +160,9 @@ exports.getHearts = async (req, res) => {
         _id: {$in: req.user.hearts}
     });
     res.render('stores', { title: 'Hearted Stores', stores });
+}
+
+exports.getTopStores = async (req, res) => {
+    const stores = await Store.getTopStores();
+    res.render('topStores', { title: '★ Top Stores', stores });
 }
