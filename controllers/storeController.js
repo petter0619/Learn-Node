@@ -48,16 +48,34 @@ exports.resize = async (req, res, next) => {
 exports.createStore = async (req, res) => {
     req.body.author = req.user._id;
     const store = await (new Store(req.body)).save();
-    console.log('Store created!');
     req.flash('success', `Successfully created ${store.name}. Care to leave a review?`);
     res.redirect(`/store/${store.slug}`);
 }
 
 exports.getStores = async (req, res) => {
-    // 1) Query database for a list of all stores
-    const stores = await Store.find();
+    // 2. Pagination
+    const page = req.params.page || 1;
+    const limit = 12;
+    const skip = (page * limit) - limit;
+    // 1. Query database for a list of all stores
+    const storesPromise = Store
+        .find()
+        // 2. Pagination
+        .skip(skip)
+        .limit(limit)
+        .sort({ created: 'desc' });
 
-    res.render('stores', { title: 'Stores', stores });
+    const countPromise = Store.countDocuments();
+    const [stores, count] = await Promise.all([storesPromise, countPromise]);
+    
+    const pages = Math.ceil(count / limit);
+
+    if(!stores.length && skip) {
+        req.flash('info', `Hey! You asked for page ${page}, but that doesn't exist. So I put you on page ${pages}.`);
+        res.redirect(`/stores/page/${pages}`);
+        return;
+    }
+    res.render('stores', { title: 'Stores', stores, page, pages, count });
 }
 
 const confirmOwner = (store, user) => {
